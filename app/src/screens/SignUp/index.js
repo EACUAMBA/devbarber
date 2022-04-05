@@ -14,6 +14,7 @@ import BarberLogo from '../../assets/barber.svg';
 import EmailIcon from '../../assets/email.svg';
 import LockIcon from '../../assets/lock.svg';
 import PersonIcon from '../../assets/person.svg';
+import API from './../../API';
 
 export default () => {
   const navigaion = useNavigation();
@@ -21,10 +22,14 @@ export default () => {
   const [passwordField, setPasswordField] = useState('');
   const [nameField, setNameField] = useState('');
 
-  const handleSignInButtonClick = function (event) {
-    navigaion.reset({
-      routes: [{name: 'SignUp'}],
-    });
+  const handleSignUpButtonClick = async function (event) {
+    if (nameField !== '' && emailField !== '' && passwordField !== '') {
+      let res = await API.signUp(nameField, emailField, passwordField);
+      let responseJsoned = res.json();
+      console.log(res);
+    } else {
+      alert('Preencha os campos.');
+    }
   };
 
   const handleMessageButtonClick = function (event) {
@@ -56,7 +61,7 @@ export default () => {
           onChangeText={text => setPasswordField(text)}
           password={true}
         />
-        <CustomButton onPress={handleSignInButtonClick}>
+        <CustomButton onPress={handleSignUpButtonClick}>
           <CustomButtonText>Cadastrar</CustomButtonText>
         </CustomButton>
       </InputArea>

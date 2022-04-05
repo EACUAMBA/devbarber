@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   Container,
@@ -13,16 +13,27 @@ import SignInput from '../../components/SignInput';
 import BarberLogo from '../../assets/barber.svg';
 import EmailIcon from '../../assets/email.svg';
 import LockIcon from '../../assets/lock.svg';
+import API from './../../API';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default () => {
   const navigaion = useNavigation();
   const [emailField, setEmailField] = useState('');
   const [passwordField, setPasswordField] = useState('');
 
-  const handleSignInButtonClick = function (event) {
-    navigaion.reset({
-      routes: [{name: 'SignUp'}],
-    });
+  const handleSignInButtonClick = async function (event) {
+    console.log('Metodo de login.');
+    if (emailField !== '' && passwordField !== '') {
+      let json = await API.signIn(emailField, passwordField);
+      console.log(json);
+      if (json.token) {
+        await AsyncStorage.setItem('token', json.token);
+      } else {
+        alert('Email ou senha errado!');
+      }
+    } else {
+      alert('Preencha os campos.');
+    }
   };
 
   const handleMessageButtonClick = function (event) {
