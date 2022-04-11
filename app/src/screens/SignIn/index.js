@@ -15,19 +15,28 @@ import EmailIcon from '../../assets/email.svg';
 import LockIcon from '../../assets/lock.svg';
 import API from './../../API';
 import AsyncStorage from '@react-native-community/async-storage';
+import {UserContext} from './../../contexts/UserContext';
 
 export default () => {
+  const {dispatch: userDispatch} = useContext(UserContext);
   const navigaion = useNavigation();
-  const [emailField, setEmailField] = useState('');
-  const [passwordField, setPasswordField] = useState('');
+  const [emailField, setEmailField] = useState('suporte@b7web.com.br');
+  const [passwordField, setPasswordField] = useState('1234');
 
   const handleSignInButtonClick = async function (event) {
     console.log('Metodo de login.');
     if (emailField !== '' && passwordField !== '') {
       let json = await API.signIn(emailField, passwordField);
-      console.log(json);
       if (json.token) {
         await AsyncStorage.setItem('token', json.token);
+        userDispatch({
+          type: 'setAvatar',
+          payload: json.data.avatar,
+        });
+
+        navigaion.reset({
+          routes: [{name: 'MainTab'}],
+        });
       } else {
         alert('Email ou senha errado!');
       }

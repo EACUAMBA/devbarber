@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   Container,
@@ -16,7 +16,11 @@ import LockIcon from '../../assets/lock.svg';
 import PersonIcon from '../../assets/person.svg';
 import API from './../../API';
 
+import AsyncStorage from '@react-native-community/async-storage';
+import {UserContext} from './../../contexts/UserContext';
+
 export default () => {
+  const {dispatch: userDispatch} = useContext(UserContext);
   const navigaion = useNavigation();
   const [emailField, setEmailField] = useState('');
   const [passwordField, setPasswordField] = useState('');
@@ -25,8 +29,13 @@ export default () => {
   const handleSignUpButtonClick = async function (event) {
     if (nameField !== '' && emailField !== '' && passwordField !== '') {
       let res = await API.signUp(nameField, emailField, passwordField);
-      let responseJsoned = res.json();
-      console.log(res);
+      let json = res.json();
+
+      await AsyncStorage.setItem('token', json.token);
+      userDispatch({
+        type: 'setAvatar',
+        payload: json.data.avatar,
+      });
     } else {
       alert('Preencha os campos.');
     }
